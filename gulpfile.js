@@ -8,7 +8,7 @@ function commit() {
     .pipe(git.commit(argv.m || '-'))
 }
 
-function push() {
+async function push() {
   git.push('origin', function(err) {
     if (err) throw err
   })
