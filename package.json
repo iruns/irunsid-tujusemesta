@@ -1,0 +1,25 @@
+{
+  "name": "irunsid-tujusemesta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gulp deploy"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-git": "^2.10.1",
+    "yargs": "^17.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iruns/irunsid-tujusemesta.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iruns/irunsid-tujusemesta/issues"
+  },
+  "homepage": "https://github.com/iruns/irunsid-tujusemesta#readme"
+}
