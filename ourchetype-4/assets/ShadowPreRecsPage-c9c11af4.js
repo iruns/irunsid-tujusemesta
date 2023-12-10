@@ -1,0 +1,1 @@
+import{d as e,a,o as _,_ as o}from"./index-564c381d.js";const s=e({__name:"ShadowPreRecsPage",setup(c){return(t,n)=>(_(),a("h1",null,"Shadow Pre Recs"))}});const d=o(s,[["__scopeId","data-v-4141b19a"]]);export{d as default};

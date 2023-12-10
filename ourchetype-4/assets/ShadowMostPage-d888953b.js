@@ -1,0 +1,1 @@
+import{d as e,a as o,o as _,_ as a}from"./index-564c381d.js";const t=e({__name:"ShadowMostPage",setup(s){return(n,c)=>(_(),o("h1",null,"Shadow Most"))}});const p=a(t,[["__scopeId","data-v-52470f87"]]);export{p as default};
