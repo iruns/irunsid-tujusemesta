@@ -26,7 +26,7 @@ $_PARAMS = json_decode(file_get_contents("php://input"), true);
 
 $limit = 10;
 
-include('db.php');
+include('../db.php');
 
 $result;
 
