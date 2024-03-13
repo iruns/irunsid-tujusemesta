@@ -34,7 +34,7 @@ $result;
 
 // fill
 // get latest (n) of (display x or null)
-if (isset($_PARAMS['after'])){
+// if (isset($_PARAMS['after'])){
   $query = $con->prepare(
     'SELECT id, content, tags, timestamp' + 
     ' FROM ruang_resah' +
@@ -42,7 +42,7 @@ if (isset($_PARAMS['after'])){
     ' ORDER BY timestamp DESC' +
     ' LIMIT 5'
   );
-  
+
   // $query = $con->prepare(
   //   'SELECT id, content, tags, timestamp' + 
   //   ' FROM ruang_resah' +
@@ -59,7 +59,7 @@ if (isset($_PARAMS['after'])){
   $result = $query->execute();
 
   // if < n, pad with other displays
-}
+// }
 
 // update
 // get first (n) after (timestamp) of (display x or null)
