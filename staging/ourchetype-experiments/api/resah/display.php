@@ -38,15 +38,23 @@ if (isset($_PARAMS['after'])){
   $query = $con->prepare(
     'SELECT id, content, tags, timestamp' + 
     ' FROM ruang_resah' +
-    ' WHERE (display_number IS NULL OR display_number = ?)' +
+    ' WHERE display_number IS NULL' +
     ' ORDER BY timestamp DESC' +
     ' LIMIT 5'
   );
   
-  $query->bind_param(
-    'n',
-    $_PARAMS['display_number'],
-  );
+  // $query = $con->prepare(
+  //   'SELECT id, content, tags, timestamp' + 
+  //   ' FROM ruang_resah' +
+  //   ' WHERE (display_number IS NULL OR display_number = ?)' +
+  //   ' ORDER BY timestamp DESC' +
+  //   ' LIMIT 5'
+  // );
+  
+  // $query->bind_param(
+  //   'i',
+  //   $_PARAMS['display_number'],
+  // );
 
   $result = $query->execute();
 
