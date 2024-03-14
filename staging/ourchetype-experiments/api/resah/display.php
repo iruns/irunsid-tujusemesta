@@ -69,6 +69,7 @@ $rows = get_array($statement, $rows);
 if ($display_number != false && count($rows) > 0) {
   $ids = array();
   for ($i=0; $i < count($rows); $i++) { 
+    $row = $rows[$i];
     $ids[] = $row['id'];
   }
 
