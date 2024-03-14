@@ -16,69 +16,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 header("Content-Type:application/json");
 
-
-// others
-// - clear the display of posts of x display
-// - remove posts of ids
-
-
 $_PARAMS = json_decode(file_get_contents("php://input"), true);
-
-$limit = 10;
 
 include('../db.php');
 
-$result;
+$query_start = 'SELECT id, content, timestamp FROM ruang_resah';
+$query = $query_start;
 
-// TODO handle no display number
+$wheres = array();
 
-// fill
-// get latest (n) of (display x or null)
-// if (isset($_PARAMS['after'])){
-  $query = $con->prepare(
-    'SELECT id, content, tags, timestamp' + 
-    ' FROM ruang_resah' +
-    ' WHERE display_number IS NULL' +
-    ' ORDER BY timestamp DESC' +
-    ' LIMIT 5'
-  );
+$is_filling = true;
+$order = 'DESC';
+$display_number = false;
+$n_posts = 0;
 
-  // $query = $con->prepare(
-  //   'SELECT id, content, tags, timestamp' + 
-  //   ' FROM ruang_resah' +
-  //   ' WHERE (display_number IS NULL OR display_number = ?)' +
-  //   ' ORDER BY timestamp DESC' +
-  //   ' LIMIT 5'
-  // );
-  
-  // $query->bind_param(
-  //   'i',
-  //   $_PARAMS['display_number'],
-  // );
+$timestamp = date("Y-m-d h:i:s");
 
-  $result = $query->execute();
-
-  // if < n, pad with other displays
-// }
-
-// update
-// get first (n) after (timestamp) of (display x or null)
-// if the display is given, set it
-
-
-if ($result) {
-  respond(200, $result);
-} else {
-  respond(400, $result);
+// if updating
+if (isset($_PARAMS['after'])) {
+  $is_filling = false;
+  $wheres[] = 'timestamp < ' . $_PARAMS['after'];
+  $order = 'ASC';
 }
 
-$query->close();
-$con->close();
+// if for a particular display
+if (isset($_PARAMS['display_number'])){
+  $display_number = $_PARAMS['display_number'];
+  $wheres[] = '(display_number IS NULL OR' .
+    ' display_number = ' . strval($display_number) . ')';
+}
 
-function respond($code, $desc)
+$query .= ' WHERE ' . join(' AND ', $wheres);
+$query .= ' ORDER BY timestamp ' . $order;
+
+// if n results is set
+if (isset($_PARAMS['n_posts'])){
+  $n_posts = $_PARAMS['n_posts'];
+  $query .= ' LIMIT ' . strval($n_posts);
+}
+// else, set a default
+else {
+  $query .= ' LIMIT 8';
+}
+
+$statement = $db->prepare($query);
+$statement_status = $statement->execute();
+
+$rows = array();
+$rows = get_array($statement, $rows);
+
+// if the display is given, set it
+if ($display_number != false && count($rows) > 0) {
+  $ids = array();
+  for ($i=0; $i < count($rows); $i++) { 
+    $ids[] = $row['id'];
+  }
+
+  $update_query = 'UPDATE `ruang_resah`' .
+    ' SET display_number = ' . strval($display_number) .
+    ' WHERE id IN (' . join(',', $ids) . ')'
+  ;
+}
+
+// if filling, for a particular display, and n results < n
+// pad with other displays
+if(
+  $is_filling &&
+  $display_number != false &&
+  $n_posts > 0 &&
+  count($rows) < $n_posts
+  ) {
+  $pad_query = $query_start .
+    ' WHERE display_number <> ' . strval($display_number) .
+    ' ORDER BY timestamp DESC' .
+    ' LIMIT ' . strval($n_posts - count($rows))
+    ;
+
+  $statement = $db->prepare($pad_query);
+  $statement_status = $statement->execute();
+
+  $rows =get_array($statement, $rows);
+}
+
+if ($statement_status) {
+  respond(200, $statement_status, $rows, $timestamp);
+} else {
+  respond(400, $statement_status, $rows, $timestamp);
+}
+
+$statement->close();
+$db->close();
+
+function get_array($statement, $rows) {
+  $result = $statement->get_result();
+  while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+    $rows[] = $row;
+  }
+  return $rows;
+}
+
+function respond($code, $desc, $content, $timestamp)
 {
   $respond['code'] = $code;
   $respond['desc'] = $desc;
+  $respond['content'] = $content;
+  $respond['timestamp'] = $timestamp;
 
   $json_response = json_encode($respond);
   echo $json_response;
