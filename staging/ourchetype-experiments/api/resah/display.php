@@ -35,7 +35,7 @@ $timestamp = date("Y-m-d h:i:s");
 // if updating
 if (isset($_PARAMS['after'])) {
   $is_filling = false;
-  $wheres[] = 'timestamp >= ' . $_PARAMS['after'];
+  $wheres[] = "timestamp >= '" . $_PARAMS['after'] . ".";
   // $order = 'ASC';
 }
 
