@@ -46,7 +46,10 @@ if (isset($_PARAMS['display_number'])){
     ' display_number = ' . strval($display_number) . ')';
 }
 
-$query .= ' WHERE ' . join(' AND ', $wheres);
+if (count($wheres)){
+  $query .= ' WHERE ' . join(' AND ', $wheres);
+}
+
 $query .= ' ORDER BY timestamp ' . $order;
 
 // if n results is set
