@@ -36,7 +36,7 @@ $timestamp = date("Y-m-d h:i:s");
 if (isset($_PARAMS['after'])) {
   $is_filling = false;
   $wheres[] = 'timestamp >= ' . $_PARAMS['after'];
-  $order = 'ASC';
+  // $order = 'ASC';
 }
 
 // if for a particular display
@@ -85,26 +85,26 @@ if ($display_number != false && count($rows) > 0) {
 
 // if filling, for a particular display, and n results < n
 // pad with other displays
-if(
-  $is_filling &&
-  $display_number != false &&
-  $n_posts > 0 &&
-  count($rows) < $n_posts
-  ) {
-  $pad_query = $query_start .
-    ' WHERE display_number <> ' . strval($display_number) .
-    ' ORDER BY timestamp DESC' .
-    ' LIMIT ' . strval($n_posts - count($rows))
-    ;
+// if(
+//   $is_filling &&
+//   $display_number != false &&
+//   $n_posts > 0 &&
+//   count($rows) < $n_posts
+//   ) {
+//   $pad_query = $query_start .
+//     ' WHERE display_number <> ' . strval($display_number) .
+//     ' ORDER BY timestamp DESC' .
+//     ' LIMIT ' . strval($n_posts - count($rows))
+//     ;
 
-  $statement = $db->prepare($pad_query);
-  $statement_status = $statement->execute();
+//   $statement = $db->prepare($pad_query);
+//   $statement_status = $statement->execute();
 
-  $result = $statement->get_result();
-  while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-    array_unshift($rows, $row);
-  }
-}
+//   $result = $statement->get_result();
+//   while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+//     array_unshift($rows, $row);
+//   }
+// }
 
 if ($statement_status) {
   respond(200, $statement_status, $rows, $timestamp);
