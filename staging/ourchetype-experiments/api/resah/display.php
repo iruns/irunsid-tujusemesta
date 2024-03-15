@@ -32,10 +32,13 @@ $n_posts = 0;
 
 $timestamp = date("Y-m-d h:i:s");
 
+// only if active
+$wheres[] = 'is_active = 1';
+
 // if updating
 if (isset($_PARAMS['after'])) {
   $is_filling = false;
-  $wheres[] = "timestamp >= '" . $_PARAMS['after'] . ".";
+  $wheres[] = "timestamp >= '" . $_PARAMS['after'] . "'";
   // $order = 'ASC';
 }
 
@@ -71,21 +74,6 @@ while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
   $rows[] = $row;
 }
 
-// if the display is given, set it
-if ($display_number != false && count($rows) > 0) {
-  $ids = array();
-  for ($i=0; $i < count($rows); $i++) { 
-    $row = $rows[$i];
-    $ids[] = $row['id'];
-  }
-
-  $update_query = 'UPDATE `ruang_resah`' .
-    ' SET display_number = ' . strval($display_number) .
-    ' WHERE id IN (' . join(',', $ids) . ')' .
-    ' AND display_number IS NULL'
-  ;
-}
-
 // if filling, for a particular display, and n results < n
 // pad with other displays
 // if(
@@ -108,6 +96,24 @@ if ($display_number != false && count($rows) > 0) {
 //     array_unshift($rows, $row);
 //   }
 // }
+
+// if the display is given, set it
+if ($display_number != false && count($rows)) {
+  $ids = array();
+  for ($i = 0; $i < count($rows); $i++) {
+    $row = $rows[$i];
+    $ids[] = $row['id'];
+  }
+
+  $update_query = 'UPDATE `ruang_resah`' .
+    ' SET display_number = ' . strval($display_number) .
+    ' WHERE id IN (' . join(',', $ids) . ')' .
+    ' AND display_number IS NULL'
+  ;
+
+  $statement = $db->prepare($update_query);
+  $statement->execute();
+}
 
 if ($statement_status) {
   respond(200, $statement_status, $rows, $timestamp);
