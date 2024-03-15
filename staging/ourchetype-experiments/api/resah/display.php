@@ -35,7 +35,7 @@ $timestamp = date("Y-m-d h:i:s");
 // if updating
 if (isset($_PARAMS['after'])) {
   $is_filling = false;
-  $wheres[] = 'timestamp < ' . $_PARAMS['after'];
+  $wheres[] = 'timestamp >= ' . $_PARAMS['after'];
   $order = 'ASC';
 }
 
@@ -56,14 +56,17 @@ if (isset($_PARAMS['n_posts'])){
 }
 // else, set a default
 else {
-  $query .= ' LIMIT 8';
+  $query .= ' LIMIT 4';
 }
 
 $statement = $db->prepare($query);
 $statement_status = $statement->execute();
 
 $rows = array();
-$rows = get_array($statement, $rows);
+$result = $statement->get_result();
+while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+  $rows[] = $row;
+}
 
 // if the display is given, set it
 if ($display_number != false && count($rows) > 0) {
@@ -75,7 +78,8 @@ if ($display_number != false && count($rows) > 0) {
 
   $update_query = 'UPDATE `ruang_resah`' .
     ' SET display_number = ' . strval($display_number) .
-    ' WHERE id IN (' . join(',', $ids) . ')'
+    ' WHERE id IN (' . join(',', $ids) . ')' .
+    ' AND display_number IS NULL'
   ;
 }
 
@@ -96,7 +100,10 @@ if(
   $statement = $db->prepare($pad_query);
   $statement_status = $statement->execute();
 
-  $rows =get_array($statement, $rows);
+  $result = $statement->get_result();
+  while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+    array_unshift($rows, $row);
+  }
 }
 
 if ($statement_status) {
