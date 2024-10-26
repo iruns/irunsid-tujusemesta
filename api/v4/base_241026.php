@@ -166,7 +166,7 @@ if (isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
   respond(400, "Invalid Request");
 }
 
-function respond($code, $desc, $data = new stdClass())
+function respond($code, $desc, $data = [])
 {
   $respond = $data;
   $respond['code'] = $code;
