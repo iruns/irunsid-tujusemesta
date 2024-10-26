@@ -69,6 +69,7 @@ $id_val['process_id'] = $_PARAMS['process_id'];
 
 switch ($path) {
   case $generateCode:
+    $data = [];
     $data['result'] = "NEWCODE";
     respond(200, "Code generated", $data);
     break;
@@ -163,7 +164,7 @@ switch ($path) {
 //       break;
 
   default:
-    respond(400, "Unknown Request");
+    respond(400, "Unknown Request: " . $path);
     break;
 }
 
