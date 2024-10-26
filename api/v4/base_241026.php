@@ -23,11 +23,11 @@ $path = $_SERVER["PATH_INFO"];
 $id_type['process_id'] = 's';
 
 // paths
-$generateCode = "generateCode";
-$postReg = "regData";
-$postPersonaResult = "personaData";
-$postResult = "resultData";
-$getData = "getData";
+$generateCode = "/generateCode";
+$postReg = "/regData";
+$postPersonaResult = "/personaData";
+$postResult = "/resultData";
+$getData = "/getData";
 
 function checkParams($_PARAMS, $param_types, $mandatory = true)
 {
