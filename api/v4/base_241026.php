@@ -58,17 +58,21 @@ function execute($query, $con)
   $con->close();
 }
 
-if (isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
-  $table = 'process_icad_2023_01';
+// if (isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
+// }else {
+//   respond(400, "Invalid Request");
+// }
 
-  $id_val['process_id'] = $_PARAMS['process_id'];
+$table = 'process_icad_2023_01';
 
-  switch ($path) {
-    case $generateCode:
-      $data['result'] = "NEWCODE";
-      respond(200, "Code generated", $data);
-      break;
-    //     case '/start':
+$id_val['process_id'] = $_PARAMS['process_id'];
+
+switch ($path) {
+  case $generateCode:
+    $data['result'] = "NEWCODE";
+    respond(200, "Code generated", $data);
+    break;
+  //     case '/start':
 //       $param_types['reg_version'] = 'd';
 //       $param_types['name'] = 's';
 //       $param_types['email'] = 's';
@@ -158,12 +162,9 @@ if (isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
 //       # code...
 //       break;
 
-    default:
-      respond(400, "Unknown Request");
-      break;
-  }
-} else {
-  respond(400, "Invalid Request");
+  default:
+    respond(400, "Unknown Request");
+    break;
 }
 
 function respond($code, $desc, $data = [])
