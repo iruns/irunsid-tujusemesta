@@ -62,7 +62,6 @@ function execute($query, $con)
   }
 
   $query->close();
-  $con->close();
 }
 
 
@@ -120,8 +119,11 @@ switch ($path) {
         ' (' . implode(', ', array_keys($param_types)) . ')' .
         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)', var_dump($vals));
 
+      $con->close();
       // execute($query, $con);
     }
+
+    break;
 
   case $postResult:
     $param_types = [];
