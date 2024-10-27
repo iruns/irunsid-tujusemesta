@@ -82,8 +82,6 @@ switch ($path) {
     if ($param_vals) {
       include('db.php');
 
-      $param_types = array_merge($id_type, $param_types);
-
       $query = $con->prepare(
         "INSERT OR UPDATE INTO $regTable" .
         ' (' . implode(', ', array_keys($param_types)) . ')' .
@@ -138,8 +136,6 @@ switch ($path) {
 
     if ($param_vals) {
       include('db.php');
-
-      $param_types = array_merge($id_type, $param_types);
 
       $query = $con->prepare(
         "INSERT OR UPDATE INTO $resultTable" .
