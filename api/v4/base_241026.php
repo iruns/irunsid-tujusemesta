@@ -29,7 +29,7 @@ function checkParams($param_types, $mandatory = true, $param_vals = [])
 {
   foreach ($param_types as $key => $type) {
     if (isset($_POST[$key])) {
-      $param_vals[$key] = $_POST[$key];
+      $param_vals[] = $_POST[$key];
     } else {
       if ($mandatory) {
         // respond(400, "Mandatory var '$key' is undefined", $_POST);
@@ -84,10 +84,12 @@ switch ($path) {
 
       $param_keys = array_keys($param_types);
 
-      $query = $con->prepare(
-        "INSERT INTO $regTable" .
+      $query_string = "INSERT INTO $regTable" .
         ' (' . implode(', ', $param_keys) . ')' .
-        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
+        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)';
+
+      $query = $con->prepare(
+        $query_string .
         ' ON DUPLICATE KEY UPDATE ' .
         implode(
           ", ",
@@ -95,7 +97,7 @@ switch ($path) {
             function ($key) {
               return "$key=?";
             },
-            $param_keys
+            array_splice($param_keys, 0, 1)
           )
         )
       );
@@ -104,7 +106,7 @@ switch ($path) {
         respond(400, 'Prepare failed: ' . $con->error);
       }
 
-      $vals = array_values($param_vals);
+      $vals = array_merge($param_vals, array_splice($param_vals, 0, 1));
 
       $bindResponse = $query->bind_param(
         implode('', array_values($param_types)),
