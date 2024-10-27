@@ -209,8 +209,8 @@ switch ($path) {
 function respond($code, $desc, $data = [])
 {
   $respond = $data;
-  $respond['code'] = $code;
-  $respond['desc'] = $desc;
+  // $respond['code'] = $code;
+  // $respond['desc'] = $desc;
 
   $json_response = json_encode($respond);
   echo $json_response;
