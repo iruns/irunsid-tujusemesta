@@ -179,7 +179,7 @@ switch ($path) {
       );
 
       if ($resultReg) {
-        $reg_data = $resultReg->fetch_all();
+        $reg_data = $resultReg->fetch_all(MYSQLI_ASSOC);
 
         if ($reg_data) {
           $data = [];
@@ -191,7 +191,7 @@ switch ($path) {
           );
 
           if ($resultResult) {
-            $data['dataResult'] = $resultResult->fetch_all();
+            $data['dataResult'] = $resultResult->fetch_all(MYSQLI_ASSOC);
           }
 
           respond(200, 'User data found', $data);
