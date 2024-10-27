@@ -87,13 +87,6 @@ switch ($path) {
     $param_types['info_from'] = 's';
     $param_types['event'] = 's';
 
-    respond(0, "INSERT OR UPDATE INTO $regTable" .
-      ' (' . implode(', ', array_keys($param_types)) . ')' .
-      ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)', var_dump($vals));
-
-    $con->close();
-    break;
-
     $param_vals = checkParams($_PARAMS, $param_types);
 
     if ($param_vals) {
@@ -122,7 +115,7 @@ switch ($path) {
         respond(400, 'Bind failed');
       }
 
-      // execute($query, $con);
+      execute($query, $con);
     }
 
     break;
