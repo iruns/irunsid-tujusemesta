@@ -43,7 +43,7 @@ function checkParams($_PARAMS, $param_types, $mandatory = true, $param_vals = []
       $param_vals[$key] = $_PARAMS[$key];
     } else {
       if ($mandatory) {
-        respond(400, "Mandatory var '$key' is undefined");
+        respond(400, "Mandatory var '$key' is undefined", var_dump($_PARAMS));
         return false;
       }
     }
