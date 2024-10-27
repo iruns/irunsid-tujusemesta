@@ -179,7 +179,7 @@ switch ($path) {
       );
 
       if ($resultReg) {
-        $reg_data = $resultReg->fetch_object();
+        $reg_data = $resultReg->fetch_all();
 
         if ($reg_data) {
           $data = [];
@@ -191,7 +191,7 @@ switch ($path) {
           );
 
           if ($resultResult) {
-            $data['dataResult'] = $resultResult->fetch_object();
+            $data['dataResult'] = $resultResult->fetch_all();
           }
 
           respond(200, 'User data found', $data);
