@@ -106,7 +106,7 @@ switch ($path) {
 
       function repeatNonKeys($array)
       {
-        return array_merge($array, array_splice($array, 0, 1));
+        return array_merge($array, array_slice($array, 1));
       }
 
       $vals = repeatNonKeys($param_vals);
@@ -118,7 +118,7 @@ switch ($path) {
         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
         ' ON DUPLICATE KEY UPDATE ' .
         implode(
-          ", ",
+          ",",
           array_map(
             function ($key) {
               return "$key=?";
