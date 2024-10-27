@@ -111,7 +111,7 @@ switch ($path) {
       execute($query, $con);
     }
 
-  case '/update':
+  case $postResult:
     $param_types = [];
 
     $param_types['code'] = 's';
