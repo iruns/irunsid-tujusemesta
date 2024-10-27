@@ -109,6 +109,8 @@ switch ($path) {
         return array_merge($array, array_splice($array, 0, 1));
       }
 
+      $vals = repeatNonKeys($param_vals);
+
       respond(
         0,
         "INSERT INTO $regTable" .
@@ -129,7 +131,6 @@ switch ($path) {
 
       break;
 
-      $vals = repeatNonKeys($param_vals);
       $type_vals = repeatNonKeys(array_values($param_types));
 
       $bindResponse = $query->bind_param(
