@@ -58,7 +58,7 @@ function execute($query, $con)
   if ($result) {
     respond(200, $result);
   } else {
-    respond(400, $result, $query->error);
+    respond(400, 'Execute failed', $query->error);
   }
 
   $query->close();
@@ -107,12 +107,12 @@ switch ($path) {
 
       $vals = array_values(array_merge($id_val, $param_vals));
 
-      $boundResponse = $query->bind_param(
+      $bindResponse = $query->bind_param(
         implode('', array_values($param_types)),
         ...$vals
       );
 
-      if ($boundResponse === false) {
+      if ($bindResponse === false) {
         respond(400, 'Bind failed');
       }
 
