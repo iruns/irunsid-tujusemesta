@@ -29,15 +29,6 @@ function checkParams($param_types, $mandatory = true, $param_vals = [])
 {
   foreach ($param_types as $key => $type) {
     if (isset($_POST[$key])) {
-      $value = $_POST[$key];
-      $valueType = gettype($value);
-
-      // if the type is incorrect, fail
-      if ($valueType != $type) {
-        respond(400, "Type of '$key' is '$valueType', while it should be '$type'");
-        return false;
-      }
-
       $param_vals[$key] = $_POST[$key];
     } else {
       if ($mandatory) {
