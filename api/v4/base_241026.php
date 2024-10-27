@@ -82,17 +82,28 @@ switch ($path) {
     if ($param_vals) {
       include('db.php');
 
+      $param_keys = array_keys($param_types);
+
       $query = $con->prepare(
         "INSERT OR UPDATE INTO $regTable" .
-        ' (' . implode(', ', array_keys($param_types)) . ')' .
-        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)'
+        ' (' . implode(', ', $param_keys) . ')' .
+        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
+        ' ON DUPLICATE KEY UPDATE ' .
+        implode(
+          ", ",
+          array_map(
+            function ($key) {
+              return "$key=?"; },
+            $param_keys
+          )
+        )
       );
 
       if ($query === false) {
         respond(400, 'Prepare failed: ' . $con->error);
       }
 
-      $vals = array_values(array_merge($id_val, $param_vals));
+      $vals = array_values($param_vals);
 
       $bindResponse = $query->bind_param(
         implode('', array_values($param_types)),
@@ -138,12 +149,13 @@ switch ($path) {
       include('db.php');
 
       $query = $con->prepare(
-        "INSERT OR UPDATE INTO $resultTable" .
+        "INSERT INTO $resultTable" .
         ' (' . implode(', ', array_keys($param_types)) . ')' .
-        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)'
+        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
+        ' ON DUPLICATE KEY UPDATE '
       );
 
-      $vals = array_values(array_merge($id_val, $param_vals));
+      $vals = array_values($param_vals);
 
       $query->bind_param(
         implode('', array_values($param_types)),
