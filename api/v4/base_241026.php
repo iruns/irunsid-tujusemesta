@@ -25,7 +25,7 @@ $postPersonaResult = '/personaData';
 $postResult = '/resultData';
 $getData = '/getData';
 
-function checkParams($_POST, $param_types, $mandatory = true, $param_vals = [])
+function checkParams($param_types, $mandatory = true, $param_vals = [])
 {
   foreach ($param_types as $key => $type) {
     if (isset($_POST[$key])) {
@@ -86,7 +86,7 @@ switch ($path) {
     $param_types['info_from'] = 's';
     $param_types['event'] = 's';
 
-    $param_vals = checkParams($_POST, $param_types);
+    $param_vals = checkParams($param_types);
 
     if ($param_vals) {
       include('db.php');
@@ -143,7 +143,7 @@ switch ($path) {
     $param_types['top_shadow'] = 's';
     $param_types['top_self'] = 's';
 
-    $param_vals = checkParams($_POST, $param_types, false);
+    $param_vals = checkParams($param_types, false);
 
     if ($param_vals) {
       include('db.php');
@@ -170,7 +170,7 @@ switch ($path) {
   case $getData:
     $param_types = [];
     $param_types['code'] = 's';
-    $param_vals = checkParams($_POST, $param_types, false);
+    $param_vals = checkParams($param_types, false);
 
     if ($param_vals) {
       include('db.php');
