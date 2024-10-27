@@ -85,7 +85,7 @@ switch ($path) {
       $param_keys = array_keys($param_types);
 
       $query = $con->prepare(
-        "INSERT OR UPDATE INTO $regTable" .
+        "INSERT INTO $regTable" .
         ' (' . implode(', ', $param_keys) . ')' .
         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
         ' ON DUPLICATE KEY UPDATE ' .
@@ -93,7 +93,8 @@ switch ($path) {
           ", ",
           array_map(
             function ($key) {
-              return "$key=?"; },
+              return "$key=?";
+            },
             $param_keys
           )
         )
