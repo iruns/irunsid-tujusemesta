@@ -16,8 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 header('Content-Type:application/json');
 
-$_PARAMS = json_decode(file_get_contents('php://input'), true);
-
 $path = $_SERVER['PATH_INFO'];
 
 // paths
@@ -27,11 +25,11 @@ $postPersonaResult = '/personaData';
 $postResult = '/resultData';
 $getData = '/getData';
 
-function checkParams($_PARAMS, $param_types, $mandatory = true, $param_vals = [])
+function checkParams($_POST, $param_types, $mandatory = true, $param_vals = [])
 {
   foreach ($param_types as $key => $type) {
-    if (isset($_PARAMS[$key])) {
-      $value = $_PARAMS[$key];
+    if (isset($_POST[$key])) {
+      $value = $_POST[$key];
       $valueType = gettype($value);
 
       // if the type is incorrect, fail
@@ -40,10 +38,10 @@ function checkParams($_PARAMS, $param_types, $mandatory = true, $param_vals = []
         return false;
       }
 
-      $param_vals[$key] = $_PARAMS[$key];
+      $param_vals[$key] = $_POST[$key];
     } else {
       if ($mandatory) {
-        // respond(400, "Mandatory var '$key' is undefined", $_PARAMS);
+        // respond(400, "Mandatory var '$key' is undefined", $_POST);
         respond(400, var_dump($_POST));
         return false;
       }
@@ -88,7 +86,7 @@ switch ($path) {
     $param_types['info_from'] = 's';
     $param_types['event'] = 's';
 
-    $param_vals = checkParams($_PARAMS, $param_types);
+    $param_vals = checkParams($_POST, $param_types);
 
     if ($param_vals) {
       include('db.php');
@@ -145,7 +143,7 @@ switch ($path) {
     $param_types['top_shadow'] = 's';
     $param_types['top_self'] = 's';
 
-    $param_vals = checkParams($_PARAMS, $param_types, false);
+    $param_vals = checkParams($_POST, $param_types, false);
 
     if ($param_vals) {
       include('db.php');
@@ -172,7 +170,7 @@ switch ($path) {
   case $getData:
     $param_types = [];
     $param_types['code'] = 's';
-    $param_vals = checkParams($_PARAMS, $param_types, false);
+    $param_vals = checkParams($_POST, $param_types, false);
 
     if ($param_vals) {
       include('db.php');
