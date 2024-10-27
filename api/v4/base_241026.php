@@ -191,7 +191,7 @@ switch ($path) {
           $data['dataResult'] = json_encode($resultResult->fetch_row());
         }
 
-        respond(200, 'User data found', json_encode($resultProgress));
+        respond(200, 'User data found', json_encode($data));
       } else {
         respond(400, 'Execute failed', $query->error);
       }
