@@ -44,7 +44,7 @@ function checkParams($_PARAMS, $param_types, $mandatory = true, $param_vals = []
     } else {
       if ($mandatory) {
         // respond(400, "Mandatory var '$key' is undefined", $_PARAMS);
-        respond(400, var_dump($_PARAMS));
+        respond(400, var_dump($_POST));
         return false;
       }
     }
