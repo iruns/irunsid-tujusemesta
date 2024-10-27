@@ -84,12 +84,10 @@ switch ($path) {
 
       $param_keys = array_keys($param_types);
 
-      $query_string = "INSERT INTO $regTable" .
-        ' (' . implode(', ', $param_keys) . ')' .
-        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)';
-
       $query = $con->prepare(
-        $query_string .
+        "INSERT INTO $regTable" .
+        ' (' . implode(', ', $param_keys) . ')' .
+        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
         ' ON DUPLICATE KEY UPDATE ' .
         implode(
           ", ",
@@ -106,10 +104,30 @@ switch ($path) {
         respond(400, 'Prepare failed: ' . $con->error);
       }
 
-      $vals = array_merge($param_vals, array_splice($param_vals, 0, 1));
+      function repeatNonKeys($array)
+      {
+        return array_merge($array, array_splice($array, 0, 1));
+      }
+
+      // respond(0, "INSERT INTO $regTable" .
+      //   ' (' . implode(', ', $param_keys) . ')' .
+      //   ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
+      //   ' ON DUPLICATE KEY UPDATE ' .
+      //   implode(
+      //     ", ",
+      //     array_map(
+      //       function ($key) {
+      //         return "$key=?";
+      //       },
+      //       array_splice($param_keys, 0, 1)
+      //     )
+      //   ));
+
+      $vals = repeatNonKeys($param_vals);
+      $type_vals = repeatNonKeys(array_values($param_types));
 
       $bindResponse = $query->bind_param(
-        implode('', array_values($param_types)),
+        implode('', $type_vals),
         ...$vals
       );
 
