@@ -109,19 +109,25 @@ switch ($path) {
         return array_merge($array, array_splice($array, 0, 1));
       }
 
-      // respond(0, "INSERT INTO $regTable" .
-      //   ' (' . implode(', ', $param_keys) . ')' .
-      //   ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
-      //   ' ON DUPLICATE KEY UPDATE ' .
-      //   implode(
-      //     ", ",
-      //     array_map(
-      //       function ($key) {
-      //         return "$key=?";
-      //       },
-      //       array_splice($param_keys, 0, 1)
-      //     )
-      //   ));
+      respond(
+        0,
+        "INSERT INTO $regTable" .
+        ' (' . implode(', ', $param_keys) . ')' .
+        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
+        ' ON DUPLICATE KEY UPDATE ' .
+        implode(
+          ", ",
+          array_map(
+            function ($key) {
+              return "$key=?";
+            },
+            array_splice($param_keys, 0, 1)
+          )
+        ),
+        $vals
+      );
+
+      break;
 
       $vals = repeatNonKeys($param_vals);
       $type_vals = repeatNonKeys(array_values($param_types));
