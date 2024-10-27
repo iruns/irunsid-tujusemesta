@@ -170,24 +170,33 @@ switch ($path) {
     break;
 
   case $getData:
-    $param_types = [];
-    $param_types['code'] = 's';
-    $param_vals = checkParams($param_types, false);
-
-    if ($param_vals) {
+    if (isset($_POST['code'])) {
       include('db.php');
 
-      $query = $con->prepare(
+      $resultReg = $con->query(
         "SELECT * FROM $reg_table" .
-        ' WHERE code=?'
+        " WHERE code=" . $_POST['code']
       );
 
-      $query->bind_param(
-        implode('', array_values($param_types)),
-        ...$param_vals
+      $resultResult = $con->query(
+        "SELECT * FROM $result_table" .
+        " WHERE code=" . $_POST['code']
       );
 
-      execute($query, $con);
+      if ($resultReg) {
+        $data = [];
+        $data['dataReg'] = json_encode($resultReg->fetch_row());
+
+        if ($resultResult) {
+          $data['dataResult'] = json_encode($resultResult->fetch_row());
+        }
+
+        respond(200, 'User data found', json_encode($resultProgress));
+      } else {
+        respond(400, 'Execute failed', $query->error);
+      }
+
+      $con->close();
     }
 
     break;
