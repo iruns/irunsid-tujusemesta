@@ -36,14 +36,14 @@ function checkParams($_PARAMS, $param_types, $mandatory = true, $param_vals = []
 
       // if the type is incorrect, fail
       if ($valueType != $type) {
-        respond(200, `Type of "$key" is "$valueType", while it should be "$type"`);
+        respond(400, `Type of "$key" is "$valueType", while it should be "$type"`);
         return false;
       }
 
       $param_vals[$key] = $_PARAMS[$key];
     } else {
       if ($mandatory) {
-        respond(200, `Mandatory var "$key" is undefined`);
+        respond(400, `Mandatory var "$key" is undefined`);
         return false;
       }
     }
@@ -58,7 +58,7 @@ function execute($query, $con)
   if ($result) {
     respond(200, $result);
   } else {
-    respond(400, $result);
+    respond(400, $result, $query->error);
   }
 
   $query->close();
@@ -96,17 +96,25 @@ switch ($path) {
       $param_types = array_merge($id_type, $param_types);
 
       $query = $con->prepare(
-        'INSERT INTO $regTable' .
+        'INSERT OR UPDATE INTO $regTable' .
         ' (' . implode(', ', array_keys($param_types)) . ')' .
         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)'
       );
 
+      if ($query === false) {
+        respond(400, 'Prepare failed: ' . $con->error);
+      }
+
       $vals = array_values(array_merge($id_val, $param_vals));
 
-      $query->bind_param(
+      $boundResponse = $query->bind_param(
         implode('', array_values($param_types)),
         ...$vals
       );
+
+      if ($boundResponse === false) {
+        respond(400, 'Bind failed');
+      }
 
       execute($query, $con);
     }
