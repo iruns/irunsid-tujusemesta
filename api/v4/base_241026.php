@@ -95,7 +95,7 @@ switch ($path) {
             function ($key) {
               return "$key=?";
             },
-            array_splice($param_keys, 0, 1)
+            array_slice($param_keys, 1)
           )
         )
       );
@@ -111,25 +111,25 @@ switch ($path) {
 
       $vals = repeatNonKeys($param_vals);
 
-      respond(
-        0,
-        "INSERT INTO $regTable" .
-        ' (' . implode(', ', $param_keys) . ')' .
-        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
-        ' ON DUPLICATE KEY UPDATE ' .
-        implode(
-          ",",
-          array_map(
-            function ($key) {
-              return "$key=?";
-            },
-            array_splice($param_keys, 0, 1)
-          )
-        ),
-        $vals
-      );
-
-      break;
+      //       respond(
+//         0,
+//         "INSERT INTO $regTable" .
+//         ' (' . implode(', ', $param_keys) . ')' .
+//         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
+//         ' ON DUPLICATE KEY UPDATE ' .
+//         implode(
+//           ",",
+//           array_map(
+//             function ($key) {
+//               return "$key=?";
+//             },
+//             array_splice($param_keys, 0, 1)
+//           )
+//         ),
+//         $vals
+//       );
+// 
+//       break;
 
       $type_vals = repeatNonKeys(array_values($param_types));
 
