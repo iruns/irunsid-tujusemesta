@@ -116,7 +116,11 @@ switch ($path) {
         respond(400, 'Bind failed');
       }
 
-      execute($query, $con);
+      respond(0, 'INSERT OR UPDATE INTO $regTable' .
+        ' (' . implode(', ', array_keys($param_types)) . ')' .
+        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)', var_dump($vals));
+
+      // execute($query, $con);
     }
 
   case $postResult:
