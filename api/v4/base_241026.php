@@ -185,10 +185,10 @@ switch ($path) {
 
       if ($resultReg) {
         $data = [];
-        $data['dataReg'] = json_encode($resultReg->fetch_row());
+        $data['dataReg'] = $resultReg->fetch_row();
 
         if ($resultResult) {
-          $data['dataResult'] = json_encode($resultResult->fetch_row());
+          $data['dataResult'] = $resultResult->fetch_row();
         }
 
         respond(200, 'User data found', $data);
