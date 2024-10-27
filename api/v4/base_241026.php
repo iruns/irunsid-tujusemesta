@@ -20,8 +20,6 @@ $_PARAMS = json_decode(file_get_contents('php://input'), true);
 
 $path = $_SERVER['PATH_INFO'];
 
-$id_type['process_id'] = 's';
-
 // paths
 $generateCode = '/generateCode';
 $postReg = '/regData';
@@ -70,8 +68,6 @@ function execute($query, $con)
 
 $regTable = 'reg_v4';
 $resultTable = 'result_v4';
-
-$id_val['process_id'] = $_PARAMS['process_id'];
 
 switch ($path) {
   case $generateCode:
@@ -176,7 +172,10 @@ switch ($path) {
         ' WHERE code=?'
       );
 
-      $query->bind_param('s', $id_val['process_id']);
+      $query->bind_param(
+        implode('', array_values($param_types)),
+        ...$vals
+      );
 
       execute($query, $con);
     }
