@@ -178,20 +178,26 @@ switch ($path) {
         " WHERE code=\"" . $_POST['code'] . "\""
       );
 
-      $resultResult = $con->query(
-        "SELECT * FROM $result_table" .
-        " WHERE code=\"" . $_POST['code'] . "\""
-      );
-
       if ($resultReg) {
-        $data = [];
-        $data['dataReg'] = $resultReg->fetch_row();
+        $reg_data = $resultReg->fetch_object();
 
-        if ($resultResult) {
-          $data['dataResult'] = $resultResult->fetch_row();
+        if ($reg_data) {
+          $data = [];
+          $data['dataReg'] = $reg_data;
+
+          $resultResult = $con->query(
+            "SELECT * FROM $result_table" .
+            " WHERE code=\"" . $_POST['code'] . "\""
+          );
+
+          if ($resultResult) {
+            $data['dataResult'] = $resultResult->fetch_object();
+          }
+
+          respond(200, 'User data found', $data);
+        } else {
+          respond(201, 'User data NOT found', $data);
         }
-
-        respond(200, 'User data found', $data);
       } else {
         respond(400, 'Execute failed', $query->error);
       }
@@ -209,8 +215,8 @@ switch ($path) {
 function respond($code, $desc, $data = [])
 {
   $respond = $data;
-  // $respond['code'] = $code;
-  // $respond['desc'] = $desc;
+  $respond['code'] = $code;
+  $respond['desc'] = $desc;
 
   $json_response = json_encode($respond);
   echo $json_response;
