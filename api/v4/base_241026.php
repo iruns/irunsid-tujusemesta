@@ -173,23 +173,23 @@ switch ($path) {
     if (isset($_POST['code'])) {
       include('db.php');
 
-      respond(
-        0,
-        "SELECT * FROM $reg_table" .
-        " WHERE code=" . $_POST['code']
-      );
-      $con->close();
-
-      break;
+      //       respond(
+//         0,
+//         "SELECT * FROM $reg_table" .
+//         " WHERE code=" . $_POST['code']
+//       );
+//       $con->close();
+// 
+//       break;
 
       $resultReg = $con->query(
         "SELECT * FROM $reg_table" .
-        " WHERE code=" . $_POST['code']
+        " WHERE code=`" . $_POST['code'] . "`"
       );
 
       $resultResult = $con->query(
         "SELECT * FROM $result_table" .
-        " WHERE code=" . $_POST['code']
+        " WHERE code=`" . $_POST['code'] . "`"
       );
 
       if ($resultReg) {
