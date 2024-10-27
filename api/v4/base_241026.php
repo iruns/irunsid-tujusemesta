@@ -41,6 +41,41 @@ function checkParams($param_types, $mandatory = true, $param_vals = [])
   return $param_vals;
 }
 
+function toInsertOrUpdateQuery($table, $param_types, $param_vals, $con)
+{
+  $param_keys = array_keys($param_types);
+
+  $query = $con->prepare(
+    "INSERT INTO $table" .
+    ' (' . implode(', ', $param_keys) . ')' .
+    ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
+    ' ON DUPLICATE KEY UPDATE ' .
+    implode(
+      ", ",
+      array_map(
+        function ($key) {
+          return "$key=?";
+        },
+        array_slice($param_keys, 1)
+      )
+    )
+  );
+
+  function repeatNonKeys($array)
+  {
+    return array_merge($array, array_slice($array, 1));
+  }
+
+  $vals = repeatNonKeys($param_vals);
+  $type_vals = repeatNonKeys(array_values($param_types));
+  $query->bind_param(
+    implode('', $type_vals),
+    ...$vals
+  );
+
+  return $query;
+}
+
 function execute($query, $con)
 {
   $result = $query->execute();
@@ -55,8 +90,8 @@ function execute($query, $con)
   $con->close();
 }
 
-$regTable = 'reg_v4';
-$resultTable = 'result_v4';
+$reg_table = 'reg_v4';
+$result_table = 'result_v4';
 
 switch ($path) {
   case $generateCode:
@@ -82,65 +117,12 @@ switch ($path) {
     if ($param_vals) {
       include('db.php');
 
-      $param_keys = array_keys($param_types);
-
-      $query = $con->prepare(
-        "INSERT INTO $regTable" .
-        ' (' . implode(', ', $param_keys) . ')' .
-        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
-        ' ON DUPLICATE KEY UPDATE ' .
-        implode(
-          ", ",
-          array_map(
-            function ($key) {
-              return "$key=?";
-            },
-            array_slice($param_keys, 1)
-          )
-        )
+      $query = toInsertOrUpdateQuery(
+        $reg_table,
+        $param_types,
+        $param_vals,
+        $con
       );
-
-      if ($query === false) {
-        respond(400, 'Prepare failed: ' . $con->error);
-      }
-
-      function repeatNonKeys($array)
-      {
-        return array_merge($array, array_slice($array, 1));
-      }
-
-      $vals = repeatNonKeys($param_vals);
-
-      //       respond(
-//         0,
-//         "INSERT INTO $regTable" .
-//         ' (' . implode(', ', $param_keys) . ')' .
-//         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
-//         ' ON DUPLICATE KEY UPDATE ' .
-//         implode(
-//           ",",
-//           array_map(
-//             function ($key) {
-//               return "$key=?";
-//             },
-//             array_splice($param_keys, 0, 1)
-//           )
-//         ),
-//         $vals
-//       );
-// 
-//       break;
-
-      $type_vals = repeatNonKeys(array_values($param_types));
-
-      $bindResponse = $query->bind_param(
-        implode('', $type_vals),
-        ...$vals
-      );
-
-      if ($bindResponse === false) {
-        respond(400, 'Bind failed');
-      }
 
       execute($query, $con);
     }
@@ -176,18 +158,11 @@ switch ($path) {
     if ($param_vals) {
       include('db.php');
 
-      $query = $con->prepare(
-        "INSERT INTO $resultTable" .
-        ' (' . implode(', ', array_keys($param_types)) . ')' .
-        ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)' .
-        ' ON DUPLICATE KEY UPDATE '
-      );
-
-      $vals = array_values($param_vals);
-
-      $query->bind_param(
-        implode('', array_values($param_types)),
-        ...$vals
+      $query = toInsertOrUpdateQuery(
+        $result_table,
+        $param_types,
+        $param_vals,
+        $con
       );
 
       execute($query, $con);
@@ -203,13 +178,13 @@ switch ($path) {
       include('db.php');
 
       $query = $con->prepare(
-        "SELECT * FROM $regTable" .
+        "SELECT * FROM $reg_table" .
         ' WHERE code=?'
       );
 
       $query->bind_param(
         implode('', array_values($param_types)),
-        ...$vals
+        ...$param_vals
       );
 
       execute($query, $con);
