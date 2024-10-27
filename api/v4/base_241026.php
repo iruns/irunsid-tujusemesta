@@ -36,14 +36,14 @@ function checkParams($_PARAMS, $param_types, $mandatory = true, $param_vals = []
 
       // if the type is incorrect, fail
       if ($valueType != $type) {
-        respond(400, `Type of "$key" is "$valueType", while it should be "$type"`);
+        respond(400, "Type of '$key' is '$valueType', while it should be '$type'");
         return false;
       }
 
       $param_vals[$key] = $_PARAMS[$key];
     } else {
       if ($mandatory) {
-        respond(400, `Mandatory var "$key" is undefined`);
+        respond(400, "Mandatory var '$key' is undefined");
         return false;
       }
     }
@@ -62,8 +62,8 @@ function execute($query, $con)
   }
 
   $query->close();
+  $con->close();
 }
-
 
 $regTable = 'reg_v4';
 $resultTable = 'result_v4';
@@ -87,7 +87,7 @@ switch ($path) {
     $param_types['info_from'] = 's';
     $param_types['event'] = 's';
 
-    respond(0, `INSERT OR UPDATE INTO $regTable` .
+    respond(0, "INSERT OR UPDATE INTO $regTable" .
       ' (' . implode(', ', array_keys($param_types)) . ')' .
       ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)', var_dump($vals));
 
@@ -102,7 +102,7 @@ switch ($path) {
       $param_types = array_merge($id_type, $param_types);
 
       $query = $con->prepare(
-        'INSERT OR UPDATE INTO $regTable' .
+        "INSERT OR UPDATE INTO $regTable" .
         ' (' . implode(', ', array_keys($param_types)) . ')' .
         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)'
       );
@@ -159,7 +159,7 @@ switch ($path) {
       $param_types = array_merge($id_type, $param_types);
 
       $query = $con->prepare(
-        `INSERT OR UPDATE INTO $resultTable` .
+        "INSERT OR UPDATE INTO $resultTable" .
         ' (' . implode(', ', array_keys($param_types)) . ')' .
         ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)'
       );
@@ -184,7 +184,7 @@ switch ($path) {
       include('db.php');
 
       $query = $con->prepare(
-        `SELECT * FROM $regTable` .
+        "SELECT * FROM $regTable" .
         ' WHERE code=?'
       );
 
