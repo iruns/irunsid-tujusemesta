@@ -196,7 +196,7 @@ switch ($path) {
 
           respond(200, 'User data found', $data);
         } else {
-          respond(201, 'User data NOT found', $data);
+          respond(201, 'User data NOT found');
         }
       } else {
         respond(400, 'Execute failed', $query->error);
