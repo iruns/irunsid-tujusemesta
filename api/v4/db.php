@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 // set mysqli error reporting
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
+include('db.php');
 $con = new mysqli(
   "localhost",
   "u890542365_our_admin",
