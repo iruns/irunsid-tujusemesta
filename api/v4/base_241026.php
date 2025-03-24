@@ -19,13 +19,15 @@ header('Content-Type:application/json');
 $path = $_SERVER['PATH_INFO'];
 
 // paths
-$generateCode = '/generateCode';
-$postReg = '/regData';
-$postPersonaResult = '/personaData';
-$postResult = '/resultData';
-$getData = '/getData';
+$generate_code = '/generateCode';
+$post_reg = '/regData';
+$post_persona_result = '/personaData';
+$post_result = '/resultData';
+$get_data = '/getData';
+$post_persona = '/postPersona';
+$get_personas = '/getPersonas';
 
-function checkParams($param_types, $mandatory = true, $param_vals = [])
+function check_params($param_types, $mandatory = true, $param_vals = [])
 {
   foreach ($param_types as $key => $type) {
     if (isset($_POST[$key])) {
@@ -41,7 +43,7 @@ function checkParams($param_types, $mandatory = true, $param_vals = [])
   return $param_vals;
 }
 
-function toInsertOrUpdateQuery($table, $param_types, $param_vals, $con)
+function to_insert_or_update_query($table, $param_types, $param_vals, $con)
 {
   $param_keys = array_keys($param_types);
 
@@ -61,13 +63,13 @@ function toInsertOrUpdateQuery($table, $param_types, $param_vals, $con)
     )
   );
 
-  function repeatNonKeys($array)
+  function repeat_non_keys($array)
   {
     return array_merge($array, array_slice($array, 1));
   }
 
-  $vals = repeatNonKeys($param_vals);
-  $type_vals = repeatNonKeys(array_values($param_types));
+  $vals = repeat_non_keys($param_vals);
+  $type_vals = repeat_non_keys(array_values($param_types));
   $query->bind_param(
     implode('', $type_vals),
     ...$vals
@@ -92,15 +94,16 @@ function execute($query, $con)
 
 $reg_table = 'reg_v4';
 $result_table = 'result_v4';
+$persona_table = 'persona_v4';
 
 switch ($path) {
-  case $generateCode:
+  case $generate_code:
     $data = [];
     $data['result'] = 'C-' . date('Ymd-His-', time()) . rand(1, 999);
     respond(200, 'Code generated', $data);
     break;
 
-  case $postReg:
+  case $post_reg:
     $param_types = [];
 
     $param_types['code'] = 's';
@@ -112,12 +115,12 @@ switch ($path) {
     $param_types['info_from'] = 's';
     $param_types['event'] = 's';
 
-    $param_vals = checkParams($param_types);
+    $param_vals = check_params($param_types);
 
     if ($param_vals) {
       include('db.php');
 
-      $query = toInsertOrUpdateQuery(
+      $query = to_insert_or_update_query(
         $reg_table,
         $param_types,
         $param_vals,
@@ -129,7 +132,7 @@ switch ($path) {
 
     break;
 
-  case $postResult:
+  case $post_result:
     $param_types = [];
 
     $param_types['code'] = 's';
@@ -153,12 +156,12 @@ switch ($path) {
     $param_types['top_shadow'] = 's';
     $param_types['top_self'] = 's';
 
-    $param_vals = checkParams($param_types, false);
+    $param_vals = check_params($param_types, false);
 
     if ($param_vals) {
       include('db.php');
 
-      $query = toInsertOrUpdateQuery(
+      $query = to_insert_or_update_query(
         $result_table,
         $param_types,
         $param_vals,
@@ -169,29 +172,29 @@ switch ($path) {
     }
     break;
 
-  case $getData:
+  case $get_data:
     if (isset($_POST['code'])) {
       include('db.php');
 
-      $resultReg = $con->query(
+      $result_reg = $con->query(
         "SELECT * FROM $reg_table" .
         " WHERE code=\"" . $_POST['code'] . "\""
       );
 
-      if ($resultReg) {
-        $reg_data = $resultReg->fetch_all(MYSQLI_ASSOC);
+      if ($result_reg) {
+        $reg_data = $result_reg->fetch_all(MYSQLI_ASSOC);
 
         if ($reg_data) {
           $data = [];
           $data['dataReg'] = $reg_data;
 
-          $resultResult = $con->query(
+          $result_result = $con->query(
             "SELECT * FROM $result_table" .
             " WHERE code=\"" . $_POST['code'] . "\""
           );
 
-          if ($resultResult) {
-            $data['dataResult'] = $resultResult->fetch_all(MYSQLI_ASSOC);
+          if ($result_result) {
+            $data['dataResult'] = $result_result->fetch_all(MYSQLI_ASSOC);
           }
 
           respond(200, 'User data found', $data);
@@ -204,6 +207,63 @@ switch ($path) {
 
       $con->close();
     }
+
+    break;
+
+  case $post_persona:
+    break;
+
+  case $get_personas:
+    include('db.php');
+
+    // if has name and persona
+    //  optional: event, after
+    //  if none, get any newest (only display ones with name + persona, otherwise just treat as last update)
+    // return code, timestamp, name?, persona?
+
+    $query_string = "SELECT code, name, persona, timestamp FROM $persona_table LIMIT 6";
+
+    $query_wheres = [];
+    $query_wheres_all = [
+      "name IS NOT NULL",
+      "persona > 0"
+    ];
+
+    if (isset($_POST['event']))
+      array_push($query_wheres, "event=\"" . $_POST['event'] . "\"");
+
+    if (isset($_POST['after']))
+      array_push($query_wheres, "timestamp>\"" . $_POST['after'] . "\"");
+
+    $query_wheres_all = array_merge($query_wheres, $query_wheres_all);
+
+    $result = $con->query(
+      $query_string .
+      " WHERE " . join($query_wheres_all, " AND ")
+    );
+
+    if ($result) {
+      $data = $result->fetch_all(MYSQLI_ASSOC);
+
+      if ($data) {
+        respond(200, 'Data found', $data);
+      } else {
+        if (count($query_wheres) > 0)
+          $query_string .= " WHERE " . join($query_wheres, " AND ");
+
+        $result = $con->query(
+          $query_string
+        );
+
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+
+        respond(200, 'Nothing new', $data);
+      }
+    } else {
+      respond(400, 'Execute failed', $query->error);
+    }
+
+    $con->close();
 
     break;
 

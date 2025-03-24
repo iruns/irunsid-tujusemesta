@@ -22,7 +22,8 @@ $path = $_SERVER["PATH_INFO"];
 
 $id_type['process_id'] = 's';
 
-function checkParams($_PARAMS, $param_types, $mandatory = true) {
+function check_params($_PARAMS, $param_types, $mandatory = true)
+{
   $param_vals = array();
   foreach ($param_types as $key => $type) {
     if (isset($_PARAMS[$key])) {
@@ -36,7 +37,8 @@ function checkParams($_PARAMS, $param_types, $mandatory = true) {
   return $param_vals;
 }
 
-function execute($query, $con){
+function execute($query, $con)
+{
   $result = $query->execute();
 
   if ($result) {
@@ -46,14 +48,14 @@ function execute($query, $con){
   }
 
   $query->close();
-  $con->close(); 
+  $con->close();
 }
 
-if(isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
+if (isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
   $table = 'process_icad_2023_01';
 
   $id_val['process_id'] = $_PARAMS['process_id'];
-  
+
   switch ($path) {
     case '/start':
       $param_types['reg_version'] = 'd';
@@ -64,10 +66,10 @@ if(isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
       $param_types['from_bandung'] = 'i';
       $param_types['info_from'] = 's';
       $param_types['specs'] = 's';
-      
-      $param_vals = checkParams($_PARAMS, $param_types);
 
-      if($param_vals) {
+      $param_vals = check_params($_PARAMS, $param_types);
+
+      if ($param_vals) {
         include('db.php');
 
         $param_types = array_merge($id_type, $param_types);
@@ -77,7 +79,7 @@ if(isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
           ' (' . implode(', ', array_keys($param_types)) . ')' .
           ' VALUES (' . str_repeat('?,', count($param_types) - 1) . '?)'
         );
-        
+
         $vals = array_values(array_merge($id_val, $param_vals));
 
         $query->bind_param(
@@ -86,12 +88,11 @@ if(isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
         );
 
         execute($query, $con);
-      }
-      else {
+      } else {
         respond(400, "Invalid Request");
       }
       break;
-  
+
     case '/update':
       $param_types['progress_version'] = 'd';
       $param_types['last_page_idx'] = 'i';
@@ -102,20 +103,20 @@ if(isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
       $param_types['is_locked'] = 'i';
       $param_types['is_free_mode'] = 'i';
 
-      $param_vals = checkParams($_PARAMS, $param_types, false);
+      $param_vals = check_params($_PARAMS, $param_types, false);
 
       include('db.php');
 
       $query = $con->prepare(
         "UPDATE $table" .
-        ' SET ' . implode('=?,', array_keys($param_vals)) . '=?'.
+        ' SET ' . implode('=?,', array_keys($param_vals)) . '=?' .
         ' WHERE process_id=?'
       );
 
       $param_vals = array_merge($param_vals, $id_val);
       $vals = array_values($param_vals);
       $param_types = array_merge($param_types, $id_type);
-      
+
       $types = '';
       foreach ($param_vals as $key => $value) {
         $types .= $param_types[$key];
@@ -126,7 +127,7 @@ if(isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
       execute($query, $con);
 
       break;
-  
+
     case '/end':
       include('db.php');
 
@@ -139,13 +140,13 @@ if(isset($_PARAMS['process_id']) && $_PARAMS['process_id'] != "") {
       $query->bind_param('s', $id_val['process_id']);
 
       execute($query, $con);
-      
+
       break;
-  
+
     case '/read':
       # code...
       break;
-    
+
     default:
       respond(400, "Unknown Request");
       break;
