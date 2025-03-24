@@ -235,6 +235,8 @@ switch ($path) {
     if (isset($_POST['after']))
       array_push($query_wheres, "timestamp\>\"" . $_POST['after'] . "\"");
 
+    print ($query_string . " WHERE " . implode(" AND ", $query_wheres_all));
+
     $query_wheres_all = array_merge($query_wheres, $query_wheres_all);
 
     $result = $con->query(
