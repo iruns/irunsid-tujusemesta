@@ -211,15 +211,32 @@ switch ($path) {
     break;
 
   case $post_persona:
+    $param_types = [];
+
+    $param_types['code'] = 's';
+    $param_types['name'] = 's';
+    $param_types['event'] = 's';
+    $param_types['persona'] = 'i';
+
+    $param_vals = check_params($param_types);
+
+    if ($param_vals) {
+      include('db.php');
+
+      $query = to_insert_or_update_query(
+        $persona_table,
+        $param_types,
+        $param_vals,
+        $con
+      );
+
+      execute($query, $con);
+    }
+
     break;
 
   case $get_personas:
     include('db.php');
-
-    // if has name and persona
-    //  optional: event, after
-    //  if none, get any newest (only display ones with name + persona, otherwise just treat as last update)
-    // return code, timestamp, name?, persona?
 
     $query_string = "SELECT code, name, persona, timestamp FROM $persona_table";
 
@@ -229,6 +246,7 @@ switch ($path) {
       "persona>0"
     );
 
+    // optional: event, after
     if (isset($_POST['event']))
       array_push($query_wheres, "event=\"" . $_POST['event'] . "\"");
 
@@ -237,12 +255,7 @@ switch ($path) {
 
     $query_wheres_all = array_merge($query_wheres, $query_wheres_all);
 
-    // print ($query_string .
-    //   " WHERE " . implode(
-    //   " AND ",
-    //   $query_wheres_all
-    // ) .
-    //   " ORDER BY timestamp DESC LIMIT 6");
+    // get finished rows
     $result = $con->query(
       $query_string .
       " WHERE " . implode(
@@ -257,7 +270,9 @@ switch ($path) {
 
       if ($data) {
         respond(200, 'Data found', $data);
-      } else {
+      }
+      // if no finished rows, get last unfinished row
+      else {
         if (count($query_wheres) > 0)
           $query_string .=
             " WHERE " . implode(" AND ", $query_wheres) .
