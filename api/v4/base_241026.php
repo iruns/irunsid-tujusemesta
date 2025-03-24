@@ -242,7 +242,6 @@ switch ($path) {
 
     $query_wheres = array();
     $query_wheres_all = array(
-      "name IS NOT NULL",
       "persona>0"
     );
 
