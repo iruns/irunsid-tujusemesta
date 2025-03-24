@@ -226,14 +226,14 @@ switch ($path) {
     $query_wheres = array();
     $query_wheres_all = array(
       "name IS NOT NULL",
-      "persona > 0"
+      "persona\>0"
     );
 
     if (isset($_POST['event']))
       array_push($query_wheres, "event=\"" . $_POST['event'] . "\"");
 
     if (isset($_POST['after']))
-      array_push($query_wheres, "timestamp>\"" . $_POST['after'] . "\"");
+      array_push($query_wheres, "timestamp\>\"" . $_POST['after'] . "\"");
 
     $query_wheres_all = array_merge($query_wheres, $query_wheres_all);
 
