@@ -233,12 +233,16 @@ switch ($path) {
       array_push($query_wheres, "event=\"" . $_POST['event'] . "\"");
 
     if (isset($_POST['after']))
-      array_push($query_wheres, "timestamp\>\"" . $_POST['after'] . "\"");
-
-    // print ($query_string . " WHERE " . implode(" AND ", $query_wheres_all));
+      array_push($query_wheres, "timestamp>\"" . $_POST['after'] . "\"");
 
     $query_wheres_all = array_merge($query_wheres, $query_wheres_all);
 
+    print ($query_string .
+      " WHERE " . implode(
+      " AND ",
+      $query_wheres_all
+    ) .
+      " ORDER BY timestamp DESC LIMIT 6");
     $result = $con->query(
       $query_string .
       " WHERE " . implode(
