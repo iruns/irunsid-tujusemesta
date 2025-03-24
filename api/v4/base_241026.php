@@ -213,10 +213,13 @@ switch ($path) {
   case $post_persona:
     $param_types = [];
 
+    $_POST['timestamp'] = date("Y-m-d H:i:s");
+
     $param_types['code'] = 's';
     $param_types['name'] = 's';
     $param_types['event'] = 's';
     $param_types['persona'] = 'i';
+    $param_types['timestamp'] = 's';
 
     $param_vals = check_params($param_types);
 
