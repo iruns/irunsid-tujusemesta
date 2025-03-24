@@ -237,12 +237,12 @@ switch ($path) {
 
     $query_wheres_all = array_merge($query_wheres, $query_wheres_all);
 
-    print ($query_string .
-      " WHERE " . implode(
-      " AND ",
-      $query_wheres_all
-    ) .
-      " ORDER BY timestamp DESC LIMIT 6");
+    // print ($query_string .
+    //   " WHERE " . implode(
+    //   " AND ",
+    //   $query_wheres_all
+    // ) .
+    //   " ORDER BY timestamp DESC LIMIT 6");
     $result = $con->query(
       $query_string .
       " WHERE " . implode(
