@@ -239,7 +239,7 @@ switch ($path) {
 
     $result = $con->query(
       $query_string .
-      " WHERE " . join($query_wheres_all, " AND ")
+      " WHERE " . implode(" AND ", $query_wheres_all)
     );
 
     if ($result) {
@@ -249,7 +249,7 @@ switch ($path) {
         respond(200, 'Data found', $data);
       } else {
         if (count($query_wheres) > 0)
-          $query_string .= " WHERE " . join($query_wheres, " AND ");
+          $query_string .= " WHERE " . implode(" AND ", $query_wheres);
 
         $result = $con->query(
           $query_string
