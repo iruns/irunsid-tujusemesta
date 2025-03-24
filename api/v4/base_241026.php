@@ -21,7 +21,6 @@ $path = $_SERVER['PATH_INFO'];
 // paths
 $generate_code = '/generateCode';
 $post_reg = '/regData';
-$post_persona_result = '/personaData';
 $post_result = '/resultData';
 $get_data = '/getData';
 $post_persona = '/postPersona';
@@ -244,7 +243,7 @@ switch ($path) {
     $data = [];
     $data['timestamp'] = date("Y-m-d H:i:s");
 
-    $query_string = "SELECT code, name, persona, timestamp FROM $persona_table";
+    $query_string = "SELECT code, name, persona FROM $persona_table";
 
     $query_wheres = array();
     $query_wheres_all = array(
@@ -271,9 +270,9 @@ switch ($path) {
     );
 
     if ($result) {
-      $data['result'] = $result->fetch_all(MYSQLI_ASSOC);
+      $data['personas'] = $result->fetch_all(MYSQLI_ASSOC);
 
-      if ($data['result']) {
+      if ($data['personas']) {
         respond(200, 'Data found', $data);
       }
       // if no finished rows, get last unfinished row
