@@ -223,11 +223,11 @@ switch ($path) {
 
     $query_string = "SELECT code, name, persona, timestamp FROM $persona_table LIMIT 6";
 
-    $query_wheres = [];
-    $query_wheres_all = [
+    $query_wheres = array();
+    $query_wheres_all = array(
       "name IS NOT NULL",
       "persona > 0"
-    ];
+    );
 
     if (isset($_POST['event']))
       array_push($query_wheres, "event=\"" . $_POST['event'] . "\"");
