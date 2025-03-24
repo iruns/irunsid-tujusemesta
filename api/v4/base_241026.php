@@ -221,7 +221,7 @@ switch ($path) {
     //  if none, get any newest (only display ones with name + persona, otherwise just treat as last update)
     // return code, timestamp, name?, persona?
 
-    $query_string = "SELECT code, name, persona, timestamp FROM $persona_table LIMIT 6";
+    $query_string = "SELECT code, name, persona, timestamp FROM $persona_table";
 
     $query_wheres = array();
     $query_wheres_all = array(
@@ -241,7 +241,11 @@ switch ($path) {
 
     $result = $con->query(
       $query_string .
-      " WHERE " . implode(" AND ", $query_wheres_all)
+      " WHERE " . implode(
+        " AND ",
+        $query_wheres_all
+      ) .
+      " ORDER BY timestamp DESC LIMIT 6"
     );
 
     if ($result) {
@@ -251,7 +255,9 @@ switch ($path) {
         respond(200, 'Data found', $data);
       } else {
         if (count($query_wheres) > 0)
-          $query_string .= " WHERE " . implode(" AND ", $query_wheres);
+          $query_string .=
+            " WHERE " . implode(" AND ", $query_wheres) .
+            " ORDER BY timestamp DESC LIMIT 1";
 
         $result = $con->query(
           $query_string
