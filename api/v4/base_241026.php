@@ -226,7 +226,7 @@ switch ($path) {
     $query_wheres = array();
     $query_wheres_all = array(
       "name IS NOT NULL",
-      "persona\>0"
+      "persona=0"
     );
 
     if (isset($_POST['event']))
