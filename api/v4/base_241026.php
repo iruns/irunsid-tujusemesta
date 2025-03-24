@@ -238,6 +238,9 @@ switch ($path) {
   case $get_personas:
     include('db.php');
 
+    $data = [];
+    $data['timestamp'] = date("Y-m-d H:i:s");
+
     $query_string = "SELECT code, name, persona, timestamp FROM $persona_table";
 
     $query_wheres = array();
@@ -265,9 +268,9 @@ switch ($path) {
     );
 
     if ($result) {
-      $data = $result->fetch_all(MYSQLI_ASSOC);
+      $data['result'] = $result->fetch_all(MYSQLI_ASSOC);
 
-      if ($data) {
+      if ($data['result']) {
         respond(200, 'Data found', $data);
       }
       // if no finished rows, get last unfinished row
@@ -281,7 +284,7 @@ switch ($path) {
           $query_string
         );
 
-        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $data['result'] = $result->fetch_all(MYSQLI_ASSOC);
 
         respond(200, 'Nothing new', $data);
       }
