@@ -175,17 +175,24 @@ switch ($path) {
     if (isset($_POST['code'])) {
       include('db.php');
 
+      $no_reg = isset($_POST['no_reg']) && $_POST['no_reg'];
+
       $result_reg = $con->query(
         "SELECT * FROM $reg_table" .
         " WHERE code=\"" . $_POST['code'] . "\""
       );
 
-      if ($result_reg) {
-        $reg_data = $result_reg->fetch_all(MYSQLI_ASSOC);
+      if ($result_reg || $no_reg) {
+        if ($result_reg)
+          $reg_data = $result_reg->fetch_all(MYSQLI_ASSOC);
 
-        if ($reg_data) {
+        if ($reg_data || $no_reg) {
           $data = [];
-          $data['dataReg'] = $reg_data;
+
+          if ($reg_data)
+            $data['dataReg'] = $reg_data;
+          else
+            $data['dataReg'] = [];
 
           $result_result = $con->query(
             "SELECT * FROM $result_table" .
@@ -217,8 +224,11 @@ switch ($path) {
     $param_types['code'] = 's';
     $param_types['name'] = 's';
     $param_types['event'] = 's';
-    $param_types['persona'] = 'i';
     $param_types['timestamp'] = 's';
+
+    if (isset($_POST['persona'])) {
+      $param_types['persona'] = 's';
+    }
 
     $param_vals = check_params($param_types);
 
@@ -241,13 +251,13 @@ switch ($path) {
     include('db.php');
 
     $data = [];
-    $data['timestamp'] = date("Y-m-d H:i:s");
+    $data['timestamp'] = $con->query('SELECT CURRENT_TIMESTAMP')->fetch_row()[0];
 
     $query_string = "SELECT code, name, persona FROM $persona_table";
 
     $query_wheres = array();
     $query_wheres_all = array(
-      "persona>0"
+      "persona IS NOT NULL"
     );
 
     // optional: event, after
@@ -286,7 +296,7 @@ switch ($path) {
           $query_string
         );
 
-        $data['result'] = $result->fetch_all(MYSQLI_ASSOC);
+        $data['personas'] = $result->fetch_all(MYSQLI_ASSOC);
 
         respond(200, 'Nothing new', $data);
       }
