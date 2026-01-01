@@ -33,8 +33,8 @@ function check_params($param_types, $mandatory = true, $param_vals = [])
       $param_vals[] = $_POST[$key];
     } else {
       if ($mandatory) {
-        // respond(400, "Mandatory var '$key' is undefined", $_POST);
-        respond(400, var_dump($_POST));
+        respond(400, "Mandatory var '$key' is undefined", $_POST);
+        // respond(400, var_dump($_POST));
         return false;
       }
     }
