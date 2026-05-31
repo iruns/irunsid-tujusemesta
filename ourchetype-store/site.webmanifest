@@ -1,6 +1,6 @@
 {
-  "name": "Ourchetype Store",
-  "short_name": "",
+  "name": "Ourchetype - House as Home",
+  "short_name": "OurchetypeHouseAsHome",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#0000ff",
   "background_color": "#ffffff",
   "display": "standalone"
 }
