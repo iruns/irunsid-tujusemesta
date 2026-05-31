@@ -65,25 +65,23 @@ Content-Type: application/x-www-form-urlencoded
 
 code=C-20260530-185042-a7f
 name=John Doe
-email=john@example.com
-age=25
-gender=Male
-domicile=Jakarta
-event=event_name
-info_from=website  (optional)
+email=john@example.com  (optional)
+age=25  (optional)
+gender=Male  (optional)
+others={"bio": "..."}  (optional)
+event=event_name  (optional)
 ```
 
 **Required Fields:**
 - `code` - Unique code (string)
 - `name` - Full name (string)
+
+**Optional Fields:**
 - `email` - Valid email (string)
 - `age` - Integer age (int)
 - `gender` - Gender (string)
-- `domicile` - City/location (string)
+- `others` - Additional info (JSON/text)
 - `event` - Event name (string)
-
-**Optional Fields:**
-- `info_from` - How they heard about event (string)
 
 **Response:**
 ```json
@@ -95,8 +93,8 @@ info_from=website  (optional)
 
 **Errors:**
 - `400` - Missing required fields
-- `400` - Invalid email format
-- `400` - Age must be an integer
+- `400` - Invalid email format (if provided)
+- `400` - Age must be an integer (if provided)
 
 ---
 
@@ -178,7 +176,7 @@ GET /data?code=C-20260530-185042-a7f&no_reg=false
         "email": "john@example.com",
         "age": 25,
         "gender": "Male",
-        "domicile": "Jakarta",
+        "others": null,
         "event": "event_name"
       }
     ],
@@ -277,7 +275,7 @@ curl -X POST http://localhost/api/v4/base_260530.php/codes
 
 # Register user
 curl -X POST http://localhost/api/v4/base_260530.php/registrations \
-  -d "code=C-20260530-185042-a7f&name=John&email=john@example.com&age=25&gender=M&domicile=Jakarta&event=test"
+  -d "code=C-20260530-185042-a7f&name=John&email=john@example.com&age=25&gender=M&event=test"
 
 # Submit results
 curl -X POST http://localhost/api/v4/base_260530.php/results \
@@ -296,6 +294,6 @@ curl "http://localhost/api/v4/base_260530.php/data?code=C-20260530-185042-a7f"
 - CORS enabled for all origins (restrict if needed)
 
 ## Database Tables
-- `reg_v4` - Registration records (primary key: code)
+- `reg_v5` - Registration records (primary key: code)
 - `result_v4` - Result records (primary key: code)
 - `persona_v4` - Persona snapshots (primary key: code)

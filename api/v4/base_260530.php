@@ -169,30 +169,29 @@ try {
       ApiResponse::success(['code' => $code], 'Code generated');
 
     case $path === '/registrations' && $method === 'POST':
-      if (!Validator::required($_POST, 'code', 'name', 'email', 'age', 'gender', 'domicile', 'event')) {
+      if (!Validator::required($_POST, 'code', 'name')) {
         ApiResponse::error('Missing required fields', 400);
       }
 
-      if (!Validator::email($_POST['email'])) {
+      if (isset($_POST['email']) && !Validator::email($_POST['email'])) {
         ApiResponse::error('Invalid email format', 400);
       }
 
-      if (!Validator::integer($_POST['age'])) {
+      if (isset($_POST['age']) && !Validator::integer($_POST['age'])) {
         ApiResponse::error('Age must be an integer', 400);
       }
 
       $params = [
         'code' => $_POST['code'],
         'name' => $_POST['name'],
-        'email' => $_POST['email'],
-        'age' => (int)$_POST['age'],
-        'gender' => $_POST['gender'],
-        'domicile' => $_POST['domicile'],
-        'info_from' => $_POST['info_from'] ?? null,
-        'event' => $_POST['event'],
+        'email' => $_POST['email'] ?? null,
+        'age' => isset($_POST['age']) ? (int)$_POST['age'] : null,
+        'gender' => $_POST['gender'] ?? null,
+        'others' => $_POST['others'] ?? null,
+        'event' => $_POST['event'] ?? null,
       ];
 
-      $db->insertOrUpdate('reg_v4', $params);
+      $db->insertOrUpdate('reg_v5', $params);
       ApiResponse::success(null, 'Registration saved');
 
     case $path === '/results' && $method === 'POST':
@@ -235,7 +234,7 @@ try {
       $no_reg = isset($_GET['no_reg']) && $_GET['no_reg'] === 'true';
 
       try {
-        $reg_data = $db->select('reg_v4', 'code = ?', [$code]);
+        $reg_data = $db->select('reg_v5', 'code = ?', [$code]);
       } catch (Exception $e) {
         $reg_data = [];
       }
